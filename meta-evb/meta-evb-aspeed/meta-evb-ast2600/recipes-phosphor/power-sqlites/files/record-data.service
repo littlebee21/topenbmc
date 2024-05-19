@@ -1,0 +1,14 @@
+[Unit]
+Description=record sensor data to sqlite3
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/record.sh
+Restart=always
+RestartSec=180
+TimeoutStartSec=60
+TimeoutStopSec=60
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target

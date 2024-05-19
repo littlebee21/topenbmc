@@ -1,0 +1,351 @@
+diff --git a/command/sol_cmds.cpp b/command/sol_cmds.cpp
+index 9bb92ce..202a789 100644
+--- a/command/sol_cmds.cpp
++++ b/command/sol_cmds.cpp
+@@ -31,6 +31,8 @@ std::vector<uint8_t> payloadHandler(const std::vector<uint8_t>& inPayload,
+     {
+         std::copy_n(inPayload.data() + sizeof(Payload), solDataSize,
+                     charData.begin());
++	//拷贝容器指定数量的内容到另外一个容器中*/
++	/*intput 原容器的起始范围迭代器。count 要拷贝的个数  result 目标容器的起始范围迭代器*/
+     }
+ 
+     try
+diff --git a/sol/sol_context.cpp b/sol/sol_context.cpp
+index 06dabcc..af7cfd4 100644
+--- a/sol/sol_context.cpp
++++ b/sol/sol_context.cpp
+@@ -111,7 +111,8 @@ void Context::processInboundPayload(uint8_t seqNum, uint8_t ackSeqNum,
+     if (ackSeqNum && (ackSeqNum != seqNums.get(false)))
+     {
+         lg2::info("Out of sequence ack number - SOL packet is dropped");
+-        return;
++//	sleep(1);
++       // return;
+     }
+ 
+     /*
+diff --git a/sol/sol_manager.cpp b/sol/sol_manager.cpp
+index a8a9faa..c96f779 100644
+--- a/sol/sol_manager.cpp
++++ b/sol/sol_manager.cpp
+@@ -17,9 +17,12 @@
+ #include <chrono>
+ #include <cmath>
+ 
++
+ constexpr const char* solInterface = "xyz.openbmc_project.Ipmi.SOL";
+ constexpr const char* solPath = "/xyz/openbmc_project/ipmi/sol/";
+ constexpr const char* PROP_INTF = "org.freedesktop.DBus.Properties";
++int SEL = 0;
++int FLAG = 0;
+ 
+ namespace sol
+ {
+@@ -36,16 +39,41 @@ void Manager::initConsoleSocket()
+         std::make_unique<boost::asio::local::stream_protocol::socket>(*io);
+     consoleSocket->connect(ep);
+ }
++void Manager::initConsoleSocketV()
++{
++    // explicit length constructor for NUL-prefixed abstract path
++    std::string path(CONSOLE_SOCKET_PATHV, CONSOLE_SOCKET_PATH_LENV);
++    boost::asio::local::stream_protocol::endpoint ep(path);
++    consoleSocketV =
++        std::make_unique<boost::asio::local::stream_protocol::socket>(*io);
++    consoleSocketV->connect(ep);
++}
+ 
+-void Manager::consoleInputHandler()
++void Manager::consoleInputHandler(int i)
+ {
+     boost::system::error_code ec;
++    size_t readDataLen ;
+     boost::asio::socket_base::bytes_readable cmd(true);
+-    consoleSocket->io_control(cmd, ec);
++//    boost::asio::socket_base::bytes_readable cmdV(true);
++    if(0==i)
++    {
++	consoleSocket->io_control(cmd, ec);
++    }
++    else if(1==i)
++    {
++	consoleSocketV->io_control(cmd, ec);
++    }
+     size_t readSize;
+     if (!ec)
+     {
+-        readSize = cmd.get();
++	if(0==i)
++	{
++	    readSize = cmd.get();
++	}
++	else if(1==i)
++	{
++	    readSize = cmd.get();
++	}
+     }
+     else
+     {
+@@ -56,8 +84,14 @@ void Manager::consoleInputHandler()
+     }
+     std::vector<uint8_t> buffer(readSize);
+     ec.clear();
+-    size_t readDataLen =
+-        consoleSocket->read_some(boost::asio::buffer(buffer), ec);
++    if(0==i)
++    {
++	readDataLen = consoleSocket->read_some(boost::asio::buffer(buffer), ec);
++    }
++    else if(1==i)
++    {
++	readDataLen = consoleSocketV->read_some(boost::asio::buffer(buffer), ec);
++    }
+     if (ec)
+     {
+         lg2::error("Reading from host console socket failed: {ERROR}", "ERROR",
+@@ -66,31 +100,77 @@ void Manager::consoleInputHandler()
+     }
+ 
+     // Update the Console buffer with data read from the socket
++    if(readDataLen == 85)/*useing to judge last bit ,is ok without*/
++    {
++        dataBuffer.erase(dataBuffer.size());
++	startHostConsole(1);
++	//stopHostConsole(0);
++        consoleSocket->cancel();
++        consoleSocket->close();
++	SEL = 1;
++	FLAG = 1;
++	//startPayloadInstance();
++    }
+     buffer.resize(readDataLen);
+     dataBuffer.write(buffer);
+ }
+ 
+ int Manager::writeConsoleSocket(const std::vector<uint8_t>& input,
+-                                bool breakFlag) const
++                                bool breakFlag)
+ {
+     boost::system::error_code ec;
++    if(FLAG == 0)
++    {
++        dataBuffer.erase(dataBuffer.size());
++	startHostConsole(1);
++	//stopHostConsole(0);
++        consoleSocket->cancel();
++        consoleSocket->close();
++	SEL = 1;
++	FLAG = 1;
++    }
+     if (breakFlag)
+     {
++	if(SEL == 0)
++	{
+         consoleSocket->send(boost::asio::buffer(input), MSG_OOB, ec);
++	}
++	if(SEL == 1)
++	{ 
++        consoleSocketV->send(boost::asio::buffer(input), MSG_OOB, ec);
++	}
+     }
+     else
+     {
++	if(SEL == 0)
++	{
+         consoleSocket->send(boost::asio::buffer(input), 0, ec);
++	}
++	if(SEL == 1)
++	{
++        consoleSocketV->send(boost::asio::buffer(input), 0, ec);
++	}
+     }
+ 
+     return ec.value();
+ }
+ 
+-void Manager::startHostConsole()
++void Manager::startHostConsole(int flag)
+ {
+-    if (!consoleSocket)
++    if(flag == 0)
+     {
+-        initConsoleSocket();
++	if (!consoleSocket)
++	{
++	    initConsoleSocket();
++	}
++    }
++
++    if(flag == 1)
++    {
++	if (!consoleSocketV)
++	{
++	    initConsoleSocketV();
++	}
+     }
+ 
+     // Register callback to close SOL session for disable SSH SOL
+@@ -98,24 +178,56 @@ void Manager::startHostConsole()
+     {
+         registerSOLServiceChangeCallback();
+     }
++    int *p = &flag;
+ 
++    if(0==flag)
++    {
+     consoleSocket->async_wait(boost::asio::socket_base::wait_read,
+-                              [this](const boost::system::error_code& ec) {
++                              [this,p](const boost::system::error_code& ec) {
++                                  if (!ec)
++                                  {
++                                      consoleInputHandler(0);
++				      *p = 0;
++                                      startHostConsole(0);
++                                  }
++                              });
++    }
++    else if(1==flag)
++    {
++    consoleSocketV->async_wait(boost::asio::socket_base::wait_read,
++                              [this,p](const boost::system::error_code& ec) {
+                                   if (!ec)
+                                   {
+-                                      consoleInputHandler();
+-                                      startHostConsole();
++                                      consoleInputHandler(1);
++				      *p = 1;
++                                      startHostConsole(1);
+                                   }
+                               });
++    }
+ } // namespace sol
+ 
+-void Manager::stopHostConsole()
++void Manager::stopHostConsole(int end)
+ {
+     if (consoleSocket)
+     {
+         consoleSocket->cancel();
+         consoleSocket.reset();
+     }
++    if (consoleSocketV)
++    {
++        consoleSocketV->cancel();
++        consoleSocketV.reset();
++    }
++    if(0 == end)
++    {
++        consoleSocket->cancel();
++        consoleSocket.reset();
++    }
++    else if(1 == end)
++    {
++        consoleSocketV->cancel();
++        consoleSocketV.reset();
++    }
+ }
+ 
+ void Manager::updateSOLParameter(uint8_t channelNum)
+@@ -183,14 +295,22 @@ void Manager::startPayloadInstance(uint8_t payloadInstance,
+     {
+         try
+         {
+-            startHostConsole();
++	    if(0==SEL)
++	    {
++		startHostConsole(0);
++	    }
++	    else if(1==SEL)
++	    {
++		startHostConsole(1);
++	    }
+         }
+         catch (const std::exception& e)
+         {
+             lg2::error(
+                 "Encountered exception when starting host console. Hence stopping host console: {ERROR}",
+                 "ERROR", e);
+-            stopHostConsole();
++            stopHostConsole(0);
++            stopHostConsole(1);
+             throw;
+         }
+     }
+@@ -214,7 +334,8 @@ void Manager::stopPayloadInstance(uint8_t payloadInstance)
+ 
+     if (payloadMap.empty())
+     {
+-        stopHostConsole();
++        stopHostConsole(0);
++        stopHostConsole(1);
+ 
+         dataBuffer.erase(dataBuffer.size());
+     }
+@@ -225,7 +346,8 @@ void Manager::stopAllPayloadInstance()
+     // Erase all payload instance
+     payloadMap.erase(payloadMap.begin(), payloadMap.end());
+ 
+-    stopHostConsole();
++    stopHostConsole(0);
++    stopHostConsole(1);
+ 
+     dataBuffer.erase(dataBuffer.size());
+ }
+diff --git a/sol/sol_manager.hpp b/sol/sol_manager.hpp
+index 33a537d..1c20b6c 100644
+--- a/sol/sol_manager.hpp
++++ b/sol/sol_manager.hpp
+@@ -20,9 +20,12 @@ constexpr size_t MAX_PAYLOAD_SIZE = 255;
+ constexpr uint8_t MAJOR_VERSION = 0x01;
+ constexpr uint8_t MINOR_VERSION = 0x00;
+ 
+-constexpr char CONSOLE_SOCKET_PATH[] = "\0obmc-console";
++constexpr char CONSOLE_SOCKET_PATH[] = "\0obmc-console.ttyVUART0";
+ constexpr size_t CONSOLE_SOCKET_PATH_LEN = sizeof(CONSOLE_SOCKET_PATH) - 1;
+ 
++constexpr char CONSOLE_SOCKET_PATHV[] = "\0obmc-console.ttyS0";
++constexpr size_t CONSOLE_SOCKET_PATH_LENV = sizeof(CONSOLE_SOCKET_PATHV) - 1;
++
+ constexpr uint8_t accIntervalFactor = 5;
+ constexpr uint8_t retryIntervalFactor = 10;
+ 
+@@ -187,10 +190,10 @@ class Manager
+     uint8_t channel = 1;
+ 
+     /** @brief Add host console I/O event source to the event loop.  */
+-    void startHostConsole();
++    void startHostConsole(int flag);
+ 
+     /** @brief Remove host console I/O event source. */
+-    void stopHostConsole();
++    void stopHostConsole(int end);
+ 
+     /** @brief Start a SOL payload instance.
+      *
+@@ -274,7 +277,7 @@ class Manager
+      *  @return 0 on success and errno on failure.
+      */
+     int writeConsoleSocket(const std::vector<uint8_t>& input,
+-                           bool breakFlag) const;
++                           bool breakFlag);
+     void updateSOLParameter(uint8_t channelNum);
+ 
+   private:
+@@ -283,12 +286,15 @@ class Manager
+     /** @brief Local stream socket for the host console. */
+     std::unique_ptr<boost::asio::local::stream_protocol::socket> consoleSocket =
+         nullptr;
++    std::unique_ptr<boost::asio::local::stream_protocol::socket> consoleSocketV =
++        nullptr;
+ 
+     /** @brief Initialize the host console file descriptor. */
+     void initConsoleSocket();
++    void initConsoleSocketV();
+ 
+     /** @brief Handle incoming console data on the console socket */
+-    void consoleInputHandler();
++    void consoleInputHandler(int i);
+ };
+ 
+ /** @brief Callback method to close SOL sessions for SOL service change  */

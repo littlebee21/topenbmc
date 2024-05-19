@@ -1,0 +1,15 @@
+[Unit]
+Description=Start Host Reset
+Requires=host-gpio.service
+After=host-gpio.service
+Wants=phosphor-reboot-host@0.service
+Conflicts=obmc-chassis-poweroff@0.target
+
+[Service]
+RemainAfterExit=yes
+Type=oneshot
+ExecStart=/usr/bin/powerreset.sh
+SyslogIdentifier=powerreset.sh
+
+[Install]
+WantedBy=obmc-chassis-powerreset@0.target

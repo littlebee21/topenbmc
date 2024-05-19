@@ -1,0 +1,229 @@
+/xyz/openbmc_project/control/host{}/auto_reboot:
+    - Interface: xyz.openbmc_project.Control.Boot.RebootPolicy
+      Properties:
+          AutoReboot:
+             Default: 'true'
+
+/xyz/openbmc_project/control/host{}/auto_reboot/one_time:
+    - Interface: xyz.openbmc_project.Control.Boot.RebootPolicy
+      Properties:
+          AutoReboot:
+             Default: 'true'
+
+/xyz/openbmc_project/control/host{}/boot:
+    - Interface: xyz.openbmc_project.Control.Boot.Source
+      Properties:
+          BootSource:
+              Default: Source::Sources::Default
+    - Interface: xyz.openbmc_project.Control.Boot.Mode
+      Properties:
+          BootMode:
+              Default: Mode::Modes::Regular
+    - Interface: xyz.openbmc_project.Control.Boot.Type
+      Properties:
+          BootType:
+              Default: Type::Types::EFI
+    - Interface: xyz.openbmc_project.Object.Enable
+      Properties:
+          Enabled:
+              Default: 'false'
+
+/xyz/openbmc_project/control/host{}/boot/one_time:
+    - Interface: xyz.openbmc_project.Object.Enable
+      Properties:
+          Enabled:
+              Default: 'false'
+
+/xyz/openbmc_project/control/host{}/power_cap:
+    - Interface: xyz.openbmc_project.Control.Power.Cap
+      Properties:
+          PowerCap:
+              Default: 0
+              Validation:
+                  Type: "range"
+                  Validator: "0..1000"
+                  Unit: "Watts"
+          PowerCapEnable:
+               Default: 'false'
+
+/xyz/openbmc_project/control/host{}/power_restore_policy:
+    - Interface: xyz.openbmc_project.Control.Power.RestorePolicy
+      Properties:
+          PowerRestorePolicy:
+              Default: RestorePolicy::Policy::AlwaysOn
+          PowerRestoreDelay:
+              Default: 70000000
+
+/xyz/openbmc_project/control/host{}/mointor:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Virtualconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Netconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Kvmconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Activaconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Securtconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Powerconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Ldapconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Usraddconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Datetimeconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Snmpconf:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/mointor/Passidty:
+    - Interface: xyz.openbmc_project.Control.Mointor
+      Properties:
+          Status:
+              Default: '"none"'
+          Conf1:
+              Default: '"none"'
+          Conf2:
+              Default: '"none"'
+
+/xyz/openbmc_project/control/host{}/power_restore_policy/one_time:
+    - Interface: xyz.openbmc_project.Control.Power.RestorePolicy
+      Properties:
+          PowerRestorePolicy:
+              Default: RestorePolicy::Policy::None
+          PowerRestoreDelay:
+              Default: 0
+
+/xyz/openbmc_project/control/host{}/restriction_mode:
+    - Interface: xyz.openbmc_project.Control.Security.RestrictionMode
+      Properties:
+          RestrictionMode:
+              Default: RestrictionMode::Modes::None
+
+/xyz/openbmc_project/control/host{}/TPMEnable:
+    - Interface: xyz.openbmc_project.Control.TPM.Policy
+      Properties:
+          TPMEnable:
+             Default: 'false'
+
+/xyz/openbmc_project/control/host{}/turbo_allowed:
+    - Interface: xyz.openbmc_project.Control.Host.TurboAllowed
+      Properties:
+          TurboAllowed:
+             Default: 'true'
+
+/xyz/openbmc_project/network/host{}/intf:
+    - Interface: xyz.openbmc_project.Network.MACAddress
+      Properties:
+          MACAddress:
+              Default: '"00:00:00:00:00:00"'
+              Validation:
+                  Type: "regex"
+                  Validator: '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$'
+
+#needs to implement address validation TODO openbmc/issues/2046
+/xyz/openbmc_project/network/host{}/intf/addr:
+    - Interface: xyz.openbmc_project.Network.IP
+      Properties:
+          Address:
+              Default: '"0.0.0.0"'
+          PrefixLength:
+              Default: 0
+              Validation:
+                  Type: "range"
+                  Validator: 0..128
+                  Unit: "bits"
+          Origin:
+              Default: IP::AddressOrigin::Static
+          Gateway:
+              Default: '"0.0.0.0"'
+          Type:
+              Default: IP::Protocol::IPv4

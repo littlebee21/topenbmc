@@ -1,0 +1,10 @@
+[Unit]
+Description=SNMP
+After=snmpd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/snmp.sh start
+
+[Install]
+WantedBy=snmpd.service

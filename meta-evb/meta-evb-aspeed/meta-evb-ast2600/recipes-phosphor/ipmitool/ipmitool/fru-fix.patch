@@ -1,0 +1,22 @@
+diff --git a/lib/ipmi_fru.c b/lib/ipmi_fru.c
+index 4a5018d..ac53888 100644
+--- a/lib/ipmi_fru.c
++++ b/lib/ipmi_fru.c
+@@ -4812,6 +4812,17 @@ f_type, uint8_t f_index, char *f_string)
+ 		goto ipmi_fru_set_field_string_out;
+ 	}
+ 
++	int len = strlen(f_string);
++	if(len<5)
++	{
++	    len=5-strlen(f_string);
++	    char *str = (char*)malloc(len*sizeof(char));
++	    if(NULL==str) return -1;
++	    memset(str,' ',len);
++	    strncat(f_string,str,len);
++	    free(str);
++	    f_string[5]='\0';
++	}
+ 	if ( strlen((const char *)fru_area) == strlen((const char *)f_string) )
+ 	{
+ 		printf("Updating Field '%s' with '%s' ...\n", fru_area, f_string );

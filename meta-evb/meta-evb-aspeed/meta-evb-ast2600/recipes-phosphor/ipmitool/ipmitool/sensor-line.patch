@@ -1,0 +1,56 @@
+diff --git a/include/ipmitool/ipmi_ime.h b/include/ipmitool/ipmi_ime.h
+old mode 100755
+new mode 100644
+diff --git a/lib/ipmi_dcmi.c b/lib/ipmi_dcmi.c
+old mode 100755
+new mode 100644
+diff --git a/lib/ipmi_ime.c b/lib/ipmi_ime.c
+old mode 100755
+new mode 100644
+diff --git a/lib/ipmi_sensor.c b/lib/ipmi_sensor.c
+index 356fa99..0f8c42e 100644
+--- a/lib/ipmi_sensor.c
++++ b/lib/ipmi_sensor.c
+@@ -301,6 +301,14 @@ rsp->data[(dataidx)], ",", "%.3f", "0x%x", "%s"); \
+ /* output format
+  *   id value units status thresholds....
+  */
++static void sensor_line()
++{
++    /*SENSOR-ID VALUE UNIT STATUS  NA   WARNLO CRITLO WARNHI CRITHI NA NA*/
++    printf("\033[1;33m%-16s \033[0m|\033[1;33m %-10s \033[0m|\033[1;33m %-10s \033[0m|\033[1;33m %-6s\033[0m|","SENSOR-ID","VALUE","UNIT","STATUS");
++ //   printf(" %-9s |","NA");/*去除不需要的显示*/
++    printf("\033[1;34m %-9s \033[0m|\033[1;34m %-9s \033[0m|\033[1;34m %-9s \033[0m|\033[1;34m %-9s \033[0m\n","WARNLO","CRITLO","WARNHI","CRITHI");
++  //  printf(" %-6s\n","NA");
++}
+ static void
+ dump_sensor_fc_thredshold(
+ 	int thresh_available,
+@@ -325,12 +333,12 @@ dump_sensor_fc_thredshold(
+ print_thresh_setting(sr->full, rsp->data[0] & (bit), \
+ rsp->data[(dataidx)], "| ", "%-10.3f", "0x%-8x", "%-10s"); \
+ }
+-		PTS(LOWER_NON_RECOV_SPECIFIED, 3);
++//		PTS(LOWER_NON_RECOV_SPECIFIED, 3); /*去除不需要显示的NA*/
+ 		PTS(LOWER_CRIT_SPECIFIED, 2);
+ 		PTS(LOWER_NON_CRIT_SPECIFIED, 1);
+ 		PTS(UPPER_NON_CRIT_SPECIFIED, 4);
+ 		PTS(UPPER_CRIT_SPECIFIED, 5);
+-		PTS(UPPER_NON_RECOV_SPECIFIED, 6);
++//		PTS(UPPER_NON_RECOV_SPECIFIED, 6);
+ #undef PTS
+ 	} else {
+ 		printf("| %-10s| %-10s| %-10s| %-10s| %-10s| %-10s",
+@@ -994,10 +1002,12 @@ ipmi_sensor_main(struct ipmi_intf *intf, int argc, char **argv)
+ 	int rc = 0;
+ 
+ 	if (argc == 0) {
++		sensor_line();
+ 		rc = ipmi_sensor_list(intf);
+ 	} else if (strncmp(argv[0], "help", 4) == 0) {
+ 		lprintf(LOG_NOTICE, "Sensor Commands:  list thresh get reading");
+ 	} else if (strncmp(argv[0], "list", 4) == 0) {
++		sensor_line();
+ 		rc = ipmi_sensor_list(intf);
+ 	} else if (strncmp(argv[0], "thresh", 5) == 0) {
+ 		rc = ipmi_sensor_set_threshold(intf, argc - 1, &argv[1]);

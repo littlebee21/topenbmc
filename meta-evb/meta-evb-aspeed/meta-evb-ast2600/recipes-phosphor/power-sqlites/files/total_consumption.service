@@ -1,0 +1,11 @@
+[Unit]
+Description=Total Consumption Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/total_consumption
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

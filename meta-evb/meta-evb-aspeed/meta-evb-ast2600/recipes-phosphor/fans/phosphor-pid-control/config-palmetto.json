@@ -1,0 +1,302 @@
+{
+    "sensors" : [
+
+	{
+            "name": "fan0",
+            "type": "fan",
+            "readPath": "/xyz/openbmc_project/sensors/fan_tach/fan0",
+            "writePath": "/sys/class/hwmon/hwmon0/pwm0",
+            "min": 200,
+            "max": 150
+        },
+        {
+            "name": "fan1",
+            "type": "fan",
+            "readPath": "/xyz/openbmc_project/sensors/fan_tach/fan1",
+            "writePath": "/sys/class/hwmon/hwmon0/pwm1",
+            "min": 200,
+            "max": 150
+        },
+        {
+            "name": "fan2",
+            "type": "fan",
+            "readPath": "/xyz/openbmc_project/sensors/fan_tach/fan2",
+            "writePath": "/sys/class/hwmon/hwmon0/pwm2",
+            "min": 200,
+            "max": 150
+        },
+        {
+            "name": "fan3",
+            "type": "fan",
+            "readPath": "/xyz/openbmc_project/sensors/fan_tach/fan3",
+            "writePath": "/sys/class/hwmon/hwmon0/pwm3",
+            "min": 200,
+            "max": 150
+        },
+	    {
+            "name": "CPU1",
+            "type": "temp",
+            "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_Temperature",
+            "writePath": "",
+            "min": 0,
+            "max": 0,
+            "ignoreDbusMinMax": true,
+            "timeout": 0
+        },
+        {
+            "name": "CPU0",
+            "type": "temp",
+            "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_Temperature",
+            "writePath": "",
+            "min": 0,
+            "max": 0,
+            "ignoreDbusMinMax": true,
+            "timeout": 0
+        }
+    ],
+    "zones" : [
+        {
+            "id": 0,
+            "minThermalOutput": 0.0,
+            "failsafePercent": 100.0,
+            "pids": [
+                {
+                    "name": "fan0",
+                    "type": "fan",
+                    "inputs": ["fan0"],
+                    "setpoint": 30,
+                    "pid": {
+                        "samplePeriod": 0.1,
+                        "proportionalCoeff": 0.0,
+                        "integralCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 1.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 0.0,
+                        "outLim_min": 3.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "fan1",
+                    "type": "fan",
+                    "inputs": ["fan1"],
+                    "setpoint": 30,
+                    "pid": {
+                        "samplePeriod": 0.1,
+                        "proportionalCoeff": 0.0,
+                        "integralCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 1.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 0.0,
+                        "outLim_min": 3.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "fan2",
+                    "type": "fan",
+                    "inputs": ["fan2"],
+                    "setpoint": 30,
+                    "pid": {
+                        "samplePeriod": 0.1,
+                        "proportionalCoeff": 0.0,
+                        "integralCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 1.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 0.0,
+                        "outLim_min": 3.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "fan3",
+                    "type": "fan",
+                    "inputs": ["fan3"],
+                    "setpoint": 30,
+                    "pid": {
+                        "samplePeriod": 0.1,
+                        "proportionalCoeff": 0.0,
+                        "integralCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 1.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 0.0,
+                        "outLim_min": 3.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "CPU0",
+                    "type": "stepwise",
+                    "inputs": [
+                        "CPU0"
+                    ],
+                    "setpoint": 10.0,
+                    "pid": {
+                        "samplePeriod": 1.0,
+                        "positiveHysteresis": 0.0,
+                        "negativeHysteresis": 0.0,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 30.0,
+                            "1": 31.0,
+                            "2": 32.0,
+                            "3": 33.0,
+                            "4": 34.0,
+                            "5": 35.0,
+                            "6": 36.0,
+                            "7": 36.0,
+                            "8": 37.0,
+                            "9": 38.0,
+                            "10": 39.0,
+                            "11": 40.0,
+                            "12": 41.0,
+                            "13": 42.0,
+                            "14": 43.0,
+                            "15": 44.0,
+                            "16": 45.0,
+                            "17": 46.0,
+                            "18": 47.0,
+                            "19": 48.0,
+                            "20": 50.0,
+                            "21": 51.0,
+                            "22": 52.0,
+                            "23": 53.0,
+                            "24": 54.0,
+                            "25": 55.0,
+                            "26": 56.0,
+                            "27": 57.0,
+                            "28": 58.0,
+                            "29": 59.0,
+                            "30": 60.0
+                        },
+                        "output": {
+                            "0": 50,
+                            "1": 55,
+                            "2": 60,
+                            "3": 65,
+                            "4": 70,
+                            "5": 75,
+                            "6": 80,
+                            "7": 85,
+                            "8": 90,
+                            "9": 95,
+                            "10": 100,
+                            "11": 105,
+                            "12": 110,
+                            "13": 115,
+                            "14": 120,
+                            "15": 125,
+                            "16": 130,
+                            "17": 135,
+                            "18": 140,
+                            "19": 145,
+                            "20": 150,
+                            "21": 155,
+                            "22": 160,
+                            "23": 165,
+                            "24": 170,
+                            "25": 175,
+                            "26": 180,
+                            "27": 185,
+                            "28": 190,
+                            "29": 195,
+                            "30": 200
+                        }
+                    }
+                },
+                {
+                    "name": "CPU1",
+                    "type": "stepwise",
+                    "inputs": [
+                        "CPU1"
+                    ],
+                    "setpoint": 10.0,
+                    "pid": {
+                        "samplePeriod": 1.0,
+                        "positiveHysteresis": 0.0,
+                        "negativeHysteresis": 0.0,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 30.0,
+                            "1": 31.0,
+                            "2": 32.0,
+                            "3": 33.0,
+                            "4": 34.0,
+                            "5": 35.0,
+                            "6": 36.0,
+                            "7": 36.0,
+                            "8": 37.0,
+                            "9": 38.0,
+                            "10": 39.0,
+                            "11": 40.0,
+                            "12": 41.0,
+                            "13": 42.0,
+                            "14": 43.0,
+                            "15": 44.0,
+                            "16": 45.0,
+                            "17": 46.0,
+                            "18": 47.0,
+                            "19": 48.0,
+                            "20": 50.0,
+                            "21": 51.0,
+                            "22": 52.0,
+                            "23": 53.0,
+                            "24": 54.0,
+                            "25": 55.0,
+                            "26": 56.0,
+                            "27": 57.0,
+                            "28": 58.0,
+                            "29": 59.0,
+                            "30": 60.0
+                        },
+                        "output": {
+                            "0": 50,
+                            "1": 55,
+                            "2": 60,
+                            "3": 65,
+                            "4": 70,
+                            "5": 75,
+                            "6": 80,
+                            "7": 85,
+                            "8": 90,
+                            "9": 95,
+                            "10": 100,
+                            "11": 105,
+                            "12": 110,
+                            "13": 115,
+                            "14": 120,
+                            "15": 125,
+                            "16": 130,
+                            "17": 135,
+                            "18": 140,
+                            "19": 145,
+                            "20": 150,
+                            "21": 155,
+                            "22": 160,
+                            "23": 165,
+                            "24": 170,
+                            "25": 175,
+                            "26": 180,
+                            "27": 185,
+                            "28": 190,
+                            "29": 195,
+                            "30": 200
+                        }
+                    }
+                }
+	    ]
+        }
+    ]
+}

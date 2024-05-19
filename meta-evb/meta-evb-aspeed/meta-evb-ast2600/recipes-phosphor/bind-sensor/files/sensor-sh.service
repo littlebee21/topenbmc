@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenBMC Sensor-Sh Control Daemon
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/mointor.sh mointor
+ExecStart=/usr/bin/sensor-sh
+Restart=always
+RestartSec=4
+StartLimitInterval=0
+
+[Install]
+WantedBy=basic.target
